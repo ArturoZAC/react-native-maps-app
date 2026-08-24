@@ -1,11 +1,15 @@
 import * as Location from 'expo-location';
 import { PermissionStatus } from '../interfaces/location.interface';
+import { Alert, Linking } from 'react-native';
 
 export const requestLocationPermission = async (): Promise<PermissionStatus> => {
   const { status } = await Location.requestForegroundPermissionsAsync();
 
   if (status !== 'granted') {
-    manualPermissionRequest();
+    if (status === 'denied') {
+      manualPermissionRequest();
+    }
+
     return PermissionStatus.DENIED;
   }
 
@@ -25,4 +29,21 @@ export const checkLocationPermission = async () => {
   }
 };
 
-export const manualPermissionRequest = async () => {};
+export const manualPermissionRequest = async () => {
+  Alert.alert(
+    'Permiso de ubicacion necesario',
+    'Para continuar debe de habilitar el permiso de location en los ajustes de la app',
+    [
+      {
+        text: 'Abrir ajustes',
+        onPress: () => {
+          Linking.openSettings();
+        },
+      },
+      {
+        text: 'Cancel',
+        style: 'destructive',
+      },
+    ]
+  );
+};
